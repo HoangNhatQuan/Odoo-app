@@ -1,7 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { HydratedDocument, Types } from 'mongoose'
 
-import { IUser } from '../users.type'
+import { IUser, UserRole } from '../users.type'
+import { UserCategory } from './user-category.entity'
 
 export type UserDocument = HydratedDocument<User>
 
@@ -18,8 +19,19 @@ export class User implements IUser {
   @Prop({ type: String, required: true })
   password: string
 
-  @Prop({ type: String, default: '', index: true })
+  @Prop({ type: String, default: UserRole.USER })
+  role: UserRole
+
+  @Prop({ type: String, required: true, index: true })
   username: string
+
+  @Prop({
+    type: Types.ObjectId,
+    default: null,
+    index: true,
+    ref: UserCategory.name,
+  })
+  category: Types.ObjectId
 
   createdAt?: any
   updatedAt?: any

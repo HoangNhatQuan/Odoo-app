@@ -10,6 +10,10 @@ import {
   RefreshTokenSchema,
 } from './entities/refresh-token.entity'
 import { UserController } from './controllers/user.controller'
+import {
+  UserCategory,
+  UserCategorySchema,
+} from './entities/user-category.entity'
 
 @Module({
   imports: [
@@ -19,6 +23,7 @@ import { UserController } from './controllers/user.controller'
         name: RefreshToken.name,
         schema: RefreshTokenSchema,
       },
+      { name: UserCategory.name, schema: UserCategorySchema },
     ]),
   ],
   controllers: [AuthController, UserController],

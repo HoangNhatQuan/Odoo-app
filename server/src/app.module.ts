@@ -9,10 +9,13 @@ import { AppController } from './app.controller'
 import configuration from './configs/configuration'
 import { UserModule } from './modules/users/users.module'
 import { AppService } from './app.service'
-import { YoutubeApiModule } from 'providers/youtube-api/youtube-api.module'
-import { NotificationModule } from 'modules/notifications/notification.module'
-import { VideoModule } from 'modules/videos/video.module'
+import { OrderModule } from 'modules/orders/order.module'
 import { AppJob } from 'app.job'
+import { ProductModule } from 'modules/products/product.module'
+import { StoreModule } from 'modules/stores/store.module'
+import { MailerModule } from '@nestjs-modules/mailer'
+import { join } from 'path'
+import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter'
 
 @Module({
   imports: [
@@ -38,12 +41,36 @@ import { AppJob } from 'app.job'
       },
       inject: [ConfigService],
     }),
+    MailerModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async (config: ConfigService) => ({
+        transport: {
+          host: config.get('MAIL_HOST'),
+          secure: false,
+          auth: {
+            user: config.get('MAIL_USER'),
+            pass: config.get('MAIL_PASSWORD'),
+          },
+        },
+        defaults: {
+          from: `"No Reply" <${config.get('MAIL_FROM')}>`,
+        },
+        template: {
+          dir: join(__dirname, 'src/providers/mailer'),
+          adapter: new HandlebarsAdapter(),
+          options: {
+            strict: true,
+          },
+        },
+      }),
+      inject: [ConfigService],
+    }),
     ScheduleModule.forRoot(),
     EventEmitterModule.forRoot({ wildcard: true }),
     UserModule,
-    YoutubeApiModule,
-    NotificationModule,
-    VideoModule,
+    OrderModule,
+    ProductModule,
+    StoreModule,
   ],
   controllers: [AppController],
   providers: [AppService, AppJob],

@@ -4,7 +4,9 @@ import {
   IsString,
   IsOptional,
   MinLength,
+  IsEnum,
 } from 'class-validator'
+import { UserRole } from '../users.type'
 
 export class SignUpDto {
   @IsString()
@@ -23,4 +25,12 @@ export class SignUpDto {
   @IsString()
   @IsOptional()
   username: string
+
+  @IsEnum(UserRole)
+  @IsOptional()
+  role: UserRole
+
+  @IsString()
+  @IsOptional()
+  categoryId: string
 }
