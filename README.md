@@ -31,23 +31,6 @@ The BSA Sales Order Management System helps BSA, a cosmetic distribution company
 ### Notification
 - **Email Notifications: Send automated email notifications to customers when their orders are ready for pickup or when they are shipped.
 
-## Installation Client
-
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/HoangNhatQuan/youtube-video-sharing-app.git
-   cd client
-   ```
-
-1. **Install dependencies:**
-   ```bash
-   pnpm install
-   ```
-
-2. **Run the application:**
-   ```bash
-   pnpm run dev
-   ```
 ## Installation Server
 
 1. **Clone the repository:**
