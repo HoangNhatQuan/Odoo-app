@@ -30,6 +30,7 @@ export interface IOrderItem {
   _id?: Types.ObjectId
   product: Types.ObjectId
   quantity: number
+  orderId: Types.ObjectId
 
   createdAt?: any
   updatedAt?: any

@@ -16,11 +16,17 @@ export class Order implements IOrder {
   @Prop({ type: String, default: 'Created' })
   status: Status
 
-  @Prop({ type: String, default: 'Created' })
+  @Prop({ type: String, default: '' })
   shippingOption: ShippingOption
 
-  @Prop({ type: Array, default: [] })
+  @Prop({ type: Array, required: true })
   orderItems: Types.ObjectId[]
+
+  @Prop({ type: Number, default: 0 })
+  totalRawPrice: number
+
+  @Prop({ type: Number, default: 0 })
+  discount: number
 
   @Prop({ type: Number, default: 0 })
   totalPrice: number

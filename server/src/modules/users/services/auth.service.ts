@@ -66,7 +66,7 @@ export class AuthService {
 
   async generateUserTokens(userId: string) {
     const user = await this.userModel.findById(userId)
-    const payload = { sub: userId, username: user.username }
+    const payload = { sub: userId, username: user.username, role: user.role }
     const accessToken = this.jwtService.sign(payload, { expiresIn: '2 days' })
     const refreshToken = uuidv4()
 

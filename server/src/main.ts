@@ -20,7 +20,7 @@ async function bootstrap() {
   app.use(helmet())
 
   // Start the application
-  await app.listen(10000)
+  await app.listen(9999)
 
   console.info(`⚡️[server]: Server is running at ${await app.getUrl()} `)
 }

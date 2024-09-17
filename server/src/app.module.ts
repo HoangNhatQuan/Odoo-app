@@ -10,12 +10,9 @@ import configuration from './configs/configuration'
 import { UserModule } from './modules/users/users.module'
 import { AppService } from './app.service'
 import { OrderModule } from 'modules/orders/order.module'
-import { AppJob } from 'app.job'
 import { ProductModule } from 'modules/products/product.module'
 import { StoreModule } from 'modules/stores/store.module'
 import { MailerModule } from '@nestjs-modules/mailer'
-import { join } from 'path'
-import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter'
 
 @Module({
   imports: [
@@ -41,29 +38,14 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
       },
       inject: [ConfigService],
     }),
-    MailerModule.forRootAsync({
-      imports: [ConfigModule],
-      useFactory: async (config: ConfigService) => ({
-        transport: {
-          host: config.get('MAIL_HOST'),
-          secure: false,
-          auth: {
-            user: config.get('MAIL_USER'),
-            pass: config.get('MAIL_PASSWORD'),
-          },
+    MailerModule.forRoot({
+      transport: {
+        host: process.env.MAIL_HOST,
+        auth: {
+          user: process.env.MAIL_USER,
+          pass: process.env.MAIL_PASSWORD,
         },
-        defaults: {
-          from: `"No Reply" <${config.get('MAIL_FROM')}>`,
-        },
-        template: {
-          dir: join(__dirname, 'src/providers/mailer'),
-          adapter: new HandlebarsAdapter(),
-          options: {
-            strict: true,
-          },
-        },
-      }),
-      inject: [ConfigService],
+      },
     }),
     ScheduleModule.forRoot(),
     EventEmitterModule.forRoot({ wildcard: true }),
@@ -73,6 +55,6 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
     StoreModule,
   ],
   controllers: [AppController],
-  providers: [AppService, AppJob],
+  providers: [AppService],
 })
 export class AppModule {}
