@@ -52,7 +52,7 @@ The BSA Sales Order Management System helps BSA, a cosmetic distribution company
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/HoangNhatQuan/youtube-video-sharing-app.git
+   git clone https://github.com/HoangNhatQuan/Odoo-app.git
    cd server
    ```
 
