@@ -12,8 +12,8 @@ export class UserCategory implements IUserCategory {
   @Prop({ type: String, index: true, required: true, unique: true })
   category: string
 
-  @Prop({ type: String, required: true, index: true })
-  discount: string
+  @Prop({ type: Number, required: true, index: true })
+  discount: number
 
   createdAt?: any
   updatedAt?: any

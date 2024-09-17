@@ -23,7 +23,7 @@ export class SignUpDto {
   email: string
 
   @IsString()
-  @IsOptional()
+  @IsNotEmpty()
   username: string
 
   @IsEnum(UserRole)
@@ -32,5 +32,5 @@ export class SignUpDto {
 
   @IsString()
   @IsOptional()
-  categoryId: string
+  category: string
 }

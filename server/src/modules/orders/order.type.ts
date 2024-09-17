@@ -3,7 +3,6 @@ import { Types } from 'mongoose'
 export interface IOrder {
   _id?: Types.ObjectId
   customer: Types.ObjectId
-  orderItems: Types.ObjectId[]
   totalPrice: number
   status: Status
   shippingOption: ShippingOption

@@ -28,7 +28,6 @@ export class User implements IUser {
   @Prop({
     type: Types.ObjectId,
     default: null,
-    index: true,
     ref: UserCategory.name,
   })
   category: Types.ObjectId

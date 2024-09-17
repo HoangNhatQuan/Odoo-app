@@ -13,26 +13,37 @@ import { User } from '../entities/users.entity'
 import { SignUpDto } from '../dto/sign-up.dto'
 import { SignInDto } from '../dto/sign-in.dto'
 import { RefreshToken } from '../entities/refresh-token.entity'
+import { UserCategory } from '../entities/user-category.entity'
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectModel(User.name) private userModel: Model<User>,
+    @InjectModel(UserCategory.name)
+    private userCategoryModel: Model<UserCategory>,
     @InjectModel(RefreshToken.name)
     private refreshTokenModel: Model<RefreshToken>,
     private jwtService: JwtService,
   ) {}
 
   async signUp(signUpData: SignUpDto) {
-    const { email, password } = signUpData
+    const { email, password, category } = signUpData
+
+    const categoryExists = await this.userCategoryModel.findOne({
+      category,
+    })
+    if (!categoryExists)
+      throw new BadRequestException('Category does not exist')
 
     const user = await this.userModel.findOne({ email })
     if (user) throw new BadRequestException('email already used')
 
     const hashedPassword = await bcrypt.hash(password, 10)
+
     return await this.userModel.create({
       ...signUpData,
       password: hashedPassword,
+      category: categoryExists._id,
     })
   }
 

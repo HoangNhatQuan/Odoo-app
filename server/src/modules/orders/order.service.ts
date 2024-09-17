@@ -53,6 +53,8 @@ export class OrderService {
 
   async addOrderItem(userId: string, body: AddItemDto) {
     const { product, quantity } = body
+    const productExist = await this.productModel.findOne({ name: product })
+    if (!productExist) throw new NotFoundException('Product not found')
     let order = await this.getCreatedOrder(userId)
     if (!order) {
       order = await this.orderModel.create({
@@ -63,7 +65,7 @@ export class OrderService {
     }
 
     let orderItem = await this.orderItemModel.findOne({
-      product: new Types.ObjectId(product),
+      product: new Types.ObjectId(productExist._id),
       orderId: order._id,
     })
 
@@ -72,57 +74,51 @@ export class OrderService {
       await orderItem.save()
     } else {
       orderItem = await this.orderItemModel.create({
-        product: new Types.ObjectId(product),
+        product: new Types.ObjectId(productExist._id),
         orderId: order._id,
         quantity,
       })
-      order.orderItems.push(orderItem._id)
     }
 
-    const findProduct = await this.productModel.findById(product)
-    if (!findProduct) throw new NotFoundException('Product not found')
     const customer = await this.userModel.findById(userId)
     const category = await this.userCategoryModel.findById(customer.category)
     if (!customer) throw new NotFoundException('Customer not found')
 
     order.discount = Number(category.discount) * 100
-    order.totalRawPrice += findProduct.price * quantity
+    order.totalRawPrice += productExist.price * quantity
     order.totalPrice +=
-      findProduct.price * quantity * (1 - Number(category.discount))
+      productExist.price * quantity * (1 - Number(category.discount))
     return order.save()
   }
 
   async removeOrderItem(userId: string, body: RemoveItemDto) {
     const { product, quantity } = body
+    const productExist = await this.productModel.findOne({ name: product })
+    if (!productExist) throw new NotFoundException('Product not found')
     const order = await this.getCreatedOrder(userId)
     if (!order) throw new NotFoundException('Order not found')
 
     const orderItem = await this.orderItemModel.findOne({
-      product: new Types.ObjectId(product),
+      product: new Types.ObjectId(productExist._id),
       orderId: order._id,
     })
     if (!orderItem) throw new NotFoundException('Order item not found')
 
     if (orderItem.quantity <= quantity) {
       await orderItem.deleteOne()
-      order.orderItems = order.orderItems.filter(
-        (item) => !item.equals(orderItem._id),
-      )
     } else {
       orderItem.quantity -= quantity
       await orderItem.save()
     }
 
-    const findProduct = await this.productModel.findById(product)
-    if (!findProduct) throw new NotFoundException('Product not found')
     const customer = await this.userModel.findById(userId)
     const category = await this.userCategoryModel.findById(customer.category)
     if (!customer) throw new NotFoundException('Customer not found')
 
     order.discount = Number(category.discount) * 100
-    order.totalRawPrice -= findProduct.price * quantity
+    order.totalRawPrice -= productExist.price * quantity
     order.totalPrice -=
-      findProduct.price * quantity * (1 - Number(category.discount))
+      productExist.price * quantity * (1 - Number(category.discount))
     return order.save()
   }
 
@@ -163,8 +159,6 @@ export class OrderService {
     const order = await this.getCreatedOrder(userId)
     const customer = await this.userModel.findById(userId)
     if (!order) throw new NotFoundException('Order not found')
-    if (!order.orderItems.length)
-      throw new BadRequestException('Order is empty')
     if (!shippingOption)
       throw new BadRequestException('Shipping option is required')
 

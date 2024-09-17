@@ -21,7 +21,7 @@ export enum UserRole {
 export interface IUserCategory {
   _id?: Types.ObjectId
   category: string
-  discount: string
+  discount: number
 
   createdAt?: any
   updatedAt?: any

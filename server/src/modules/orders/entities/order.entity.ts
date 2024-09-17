@@ -19,9 +19,6 @@ export class Order implements IOrder {
   @Prop({ type: String, default: '' })
   shippingOption: ShippingOption
 
-  @Prop({ type: Array, required: true })
-  orderItems: Types.ObjectId[]
-
   @Prop({ type: Number, default: 0 })
   totalRawPrice: number
 
