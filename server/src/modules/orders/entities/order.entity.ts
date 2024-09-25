@@ -3,6 +3,7 @@ import { HydratedDocument, Types } from 'mongoose'
 
 import { IOrder, ShippingOption, Status } from '../order.type'
 import { User } from 'modules/users/entities/users.entity'
+import { OrderItem } from './order-items.entity'
 
 export type OrderDocument = HydratedDocument<Order>
 
@@ -18,6 +19,9 @@ export class Order implements IOrder {
 
   @Prop({ type: String, default: '' })
   shippingOption: ShippingOption
+
+  @Prop({ type: [Types.ObjectId], ref: OrderItem.name, required: true })
+  orderItems: Types.ObjectId[]
 
   @Prop({ type: Number, default: 0 })
   totalRawPrice: number

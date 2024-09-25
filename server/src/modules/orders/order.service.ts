@@ -78,6 +78,11 @@ export class OrderService {
         orderId: order._id,
         quantity,
       })
+      order = await this.orderModel.findByIdAndUpdate(
+        order._id,
+        { $push: { orderItems: new Types.ObjectId(orderItem._id) } },
+        { new: true },
+      )
     }
 
     const customer = await this.userModel.findById(userId)
@@ -88,14 +93,14 @@ export class OrderService {
     order.totalRawPrice += productExist.price * quantity
     order.totalPrice +=
       productExist.price * quantity * (1 - Number(category.discount))
-    return order.save()
+    return await (await order.save()).populate('orderItems')
   }
 
   async removeOrderItem(userId: string, body: RemoveItemDto) {
     const { product, quantity } = body
     const productExist = await this.productModel.findOne({ name: product })
     if (!productExist) throw new NotFoundException('Product not found')
-    const order = await this.getCreatedOrder(userId)
+    let order = await this.getCreatedOrder(userId)
     if (!order) throw new NotFoundException('Order not found')
 
     const orderItem = await this.orderItemModel.findOne({
@@ -106,6 +111,11 @@ export class OrderService {
 
     if (orderItem.quantity <= quantity) {
       await orderItem.deleteOne()
+      order = await this.orderModel.findByIdAndUpdate(
+        order._id,
+        { $pull: { orderItems: new Types.ObjectId(orderItem._id) } },
+        { new: true },
+      )
     } else {
       orderItem.quantity -= quantity
       await orderItem.save()
@@ -119,7 +129,7 @@ export class OrderService {
     order.totalRawPrice -= productExist.price * quantity
     order.totalPrice -=
       productExist.price * quantity * (1 - Number(category.discount))
-    return order.save()
+    return await (await order.save()).populate('orderItems')
   }
 
   async verifyStock(orderItems: OrderItem[], store: string) {
@@ -127,18 +137,20 @@ export class OrderService {
       const product = await this.productModel.findById(item.product)
       if (!product) throw new NotFoundException('Product not found')
       const stock = await this.stockModel.findOne({
-        product: product._id,
+        product: product._id.toString(),
         store: new Types.ObjectId(store),
       })
       if (!stock) throw new NotFoundException('Stock not found')
       if (stock.quantity < item.quantity) {
         const inventory = await this.inventoryModel.findOne({
-          product: product._id,
+          product: product._id.toString(),
         })
         if (!inventory) throw new NotFoundException('Inventory not found')
         if (inventory.quantity < item.quantity)
           throw new BadRequestException(`Not enough stock for ${product.name}`)
       }
+      stock.quantity -= item.quantity
+      await stock.save()
     }
   }
 
@@ -147,11 +159,13 @@ export class OrderService {
       const product = await this.productModel.findById(item.product)
       if (!product) throw new NotFoundException('Product not found')
       const inventory = await this.inventoryModel.findOne({
-        product: product._id,
+        product: product._id.toString(),
       })
       if (!inventory) throw new NotFoundException('Inventory not found')
       if (inventory.quantity < item.quantity)
         throw new BadRequestException(`Not enough for ${product.name}`)
+      inventory.quantity -= item.quantity
+      await inventory.save()
     }
   }
 
@@ -186,7 +200,7 @@ export class OrderService {
     }
 
     order.status = Status.COMPLETED
-    return order.save()
+    return await (await order.save()).populate('orderItems')
   }
 
   async cancelOrder(userId: string) {

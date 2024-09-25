@@ -2,7 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { HydratedDocument, Types } from 'mongoose'
 
 import { IOrderItem } from '../order.type'
-import { Order } from './order.entity'
+import { Product } from 'modules/products/entities/product.entity'
 
 export type OrderItemDocument = HydratedDocument<OrderItem>
 
@@ -10,10 +10,15 @@ export type OrderItemDocument = HydratedDocument<OrderItem>
 export class OrderItem implements IOrderItem {
   _id?: Types.ObjectId
 
-  @Prop({ type: Types.ObjectId, index: true, required: true })
+  @Prop({
+    type: Types.ObjectId,
+    index: true,
+    required: true,
+    ref: Product.name,
+  })
   product: Types.ObjectId
 
-  @Prop({ type: Types.ObjectId, index: true, required: true, ref: Order.name })
+  @Prop({ type: Types.ObjectId, index: true, required: true })
   orderId: Types.ObjectId
 
   @Prop({ type: Number, required: true, min: 1 })

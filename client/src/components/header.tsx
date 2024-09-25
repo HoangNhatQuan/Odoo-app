@@ -18,8 +18,12 @@ const Logo = ({
     onClick={onNavigate}
     className="flex flex-row gap-2 items-center cursor-pointer flex-1"
   >
-    <HeroIconSolid.VideoCameraIcon className="text-default w-16 h-16" />
-    {!isMobile && <h5 className="text-default font-bold">Share your Video</h5>}
+    <HeroIconSolid.BuildingStorefrontIcon className="text-default w-16 h-16" />
+    {!isMobile && (
+      <h4 className="text-default font-bold">
+        Odoo <br /> Store
+      </h4>
+    )}
   </div>
 )
 
@@ -43,14 +47,6 @@ export default function Header() {
           <div className="flex flex-row items-center gap-4">
             <h5 className="md:text-base text-sm">Welcome, {user?.name}</h5>
             {!isMobile && (
-              <button
-                onClick={() => navigate('/sharing')}
-                className="btn btn-primary bg-[#816557]"
-              >
-                Share a movie
-              </button>
-            )}
-            {!isMobile && (
               <button className="btn btn-warning" onClick={handleLogout}>
                 Logout
               </button>
@@ -66,7 +62,7 @@ export default function Header() {
               />
               <div className="drawer-content flex justify-end items-center">
                 <label htmlFor="my-drawer-4" className="flex justify-end">
-                  <HeroIconSolid.Bars3Icon className="text-default w-8 h-8" />
+                  <HeroIconSolid.BuildingStorefrontIcon className="text-default w-8 h-8" />
                 </label>
               </div>
               <div className="drawer-side">
